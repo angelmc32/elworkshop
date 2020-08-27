@@ -1,11 +1,15 @@
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
-const workerSchema = new Schema(
+const userSchema = new Schema(
   {
-    email: {
+    phone_number: {
       type: String,
-      unique: true
+      required: true,
+      unique: true,
+      minlength: 10,
+      maxlength: 10,
+      index: true
     },
     password: {
       type: String,
@@ -20,11 +24,6 @@ const workerSchema = new Schema(
       type: String,
       required: true,
       trim: true
-    },
-    phone_number: {
-      type: Number,
-      required: true,
-      unique: true
     },
     zip_code: {
       type: Number
@@ -56,4 +55,4 @@ const workerSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = model('Worker', workerSchema);
+module.exports = model('User', userSchema);

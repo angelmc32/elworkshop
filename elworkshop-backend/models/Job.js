@@ -3,10 +3,10 @@ const { Schema, model } = mongoose;
 
 const jobSchema = new Schema(
   {
-    worker: {
+    user: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: 'Worker'
+      ref: 'User'
     },
     category: {
       type: String,

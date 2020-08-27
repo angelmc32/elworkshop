@@ -4,14 +4,13 @@ const bodyParser   = require('body-parser');
 const cookieParser = require('cookie-parser');
 const express      = require('express');
 const favicon      = require('serve-favicon');
-const hbs          = require('hbs');
 const mongoose     = require('mongoose');
 const logger       = require('morgan');
 const path         = require('path');
 
-
+const cloudDB      = process.env.DB;
 mongoose
-  .connect('mongodb://localhost/elworkshop-backend', {useNewUrlParser: true})
+  .connect(cloudDB, {useNewUrlParser: true, useUnifiedTopology: true})
   .then(x => {
     console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`)
   })
@@ -49,10 +48,12 @@ app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
 // default value for title local
 app.locals.title = 'Express - Generated with IronGenerator';
 
+// Routes declaration and setup
+const authRoutes = require('./routes/auth-routes');
+const jobRoutes = require('./routes/job-routes');
 
-
-const index = require('./routes/index');
-app.use('/', index);
+app.use('/api', authRoutes);
+app.use('/api/jobs', jobRoutes);
 
 
 module.exports = app;
