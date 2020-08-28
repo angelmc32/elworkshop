@@ -4,6 +4,9 @@ const jwt = require('jsonwebtoken');                // Import jsonwebtoken for t
 const bcrypt = require('bcryptjs');                 // Import bcryptjs for password hash creation and password validation
 const User = require('../models/User');             // Require the User model to create and find users in database
 
+const { verifyToken } = require('../helpers/auth-helper');
+const uploader = require('../helpers/multer-helper');
+
 // POST route for user signup. Validate password length, hash the password, create the user in the database,
 // if successful, send email for verification and a response with status 200, the user, token and success message,
 // if unsuccessful, send a response with status 500 (Internal Server Error), the error and a message
@@ -97,6 +100,35 @@ router.post('/login', (req, res, next) => {
 
   });
   
+});
+
+router.patch('/profile', verifyToken, uploader.single('profile_picture'), (req, res, next) => {
+
+  const { id } = req.user;    // Destructure the user id from the request
+  const body  = req.body;               // Extract body from request
+
+  // If a file is being uploaded, set the secure_url property in the secure_url variable
+  if ( req.file ) {
+    const secure_url = req.file.secure_url;
+    body['profile_picture'] = secure_url;
+  }
+
+  // Find patient by id and update fields sent by the front-end in the request body and from multer helper
+  User.findByIdAndUpdate( id, {$set: {...body}}, { new: true } )
+  .then( user => {                    // Rename the found patient document as "user"
+
+    delete user._doc.password;        // Delete password from user document before sending it
+
+    res.status(200).json({ user });   // Respond with 200 status and updated user document
+
+  })
+  .catch( error => {
+
+    console.log(error)
+    res.status(500).json({ error, msg: 'Unable to update profile' }); // Respond 500 status, error and message
+
+  });
+
 });
 
 module.exports = router;

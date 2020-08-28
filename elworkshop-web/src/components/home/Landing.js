@@ -46,7 +46,12 @@ const Landing = () => {
             { jobs ? 
                 jobs.map( (job, index) => 
                   <tr key={index} >
-                    <td className="uk-text-center">{job.user.first_name} {job.user.last_name}</td>
+                    <td className="uk-text-center uk-flex uk-flex-center uk-flex-middle">
+                      <div className="uk-width-1-3 uk-margin-small-right">
+                        <img className="uk-border-circle" width={40} height={40} src={job.user.profile_picture} alt="User profile" />
+                      </div>
+                      {job.user.first_name} {job.user.last_name}
+                    </td>
                     <td className="uk-text-center">{job.user.phone_number}</td>
                     <td className="uk-text-center uk-visible@s">{job.category}</td>
                     <td className="uk-text-center uk-visible@s uk-width-1-3@s">{job.description}</td>

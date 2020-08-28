@@ -34,7 +34,7 @@ export const editProfile = (data) => {
   const token = localStorage.getItem('token');  // Get token from localStorage
 
   // Return a call to our /edit route, while sending the parameters obtained from the form/front-end
-  return axios.patch(`${base_url}/edit`, data, {
+  return axios.patch(`${base_url}/profile`, data, {
     headers: {
       Authorization: token,                     // Send token in request headers (check api/helpers/auth-helper)
       "Content-Type": "multipart/form-data"     // Set content as multipart/form-data for files and text
