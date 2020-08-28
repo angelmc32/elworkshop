@@ -1,11 +1,11 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Switch, Route } from 'react-router-dom';
-import { AppContext } from './AppContext';
 
 // Import Components for navigation
 import Login from './components/auth/Login';
 import Signup from './components/auth/Signup';
 import Home from './components/home/Home';
+import Landing from './components/home/Landing'
 
 const Router = () => {
 
@@ -13,7 +13,7 @@ const Router = () => {
     <Switch>
 
       <Route exact path="/">
-        <Login />
+        <Landing />
       </Route>
       <Route path="/login">
         <Login />

@@ -8,7 +8,7 @@ const { verifyToken } = require('../helpers/auth-helper');
 router.get('/all', (req, res, next) => {
 
   Job.find()
-  .sort({date: -1})
+  .populate('user')
   .then( jobs => {
 
     res.status(200).json({ jobs });

@@ -1,31 +1,38 @@
-import React, { useEffect, useState } from 'react';                        // Import React
+import React, { Fragment, useEffect, useState } from 'react';                        // Import React
 import { NavLink } from 'react-router-dom';       // Import NavLink for "navigation"
+import moment from 'moment';                                    // Import momentjs for date formatting
 
 // Declare AuthForm functional component, receives action variable for conditional rendering,
 // phone_number, password and confirm_password variables from form state variable, and submit and handleChange functions
-const AuthForm = ( { submit, action, phone_number = '', password = '', confirm_password = '', handleChange, spinnerState } ) => {
+const AuthForm = ( { submit, action, phone_number = '', password = '', confirm_password = '', handleChange, spinnerState, form } ) => {
 
-  let error = null;
   const [ phoneInputState, setPhoneInputState ] = useState(null)
   const [ passwordInputState, setPasswordInputState ] = useState(null)
   const [ confPasswordInputState, setConfPasswordInputState ] = useState(null)
-  const [ checkboxState, setCheckboxState ] = useState(false)
-  const [ isButtonDisabled, setIsButtonDisabled ] = useState(true)
+  const [ state, setState ] = useState({
+    isButtonDisabled: true,
+    errorMessage: null
+  });
   const [ passwordValidationObj, setPasswordValidationObj ] = useState({minLength: false, oneCap: false, oneLow: false, oneNumber: false})
+  const now = moment();
+  const maxDate = moment().subtract(18, 'years').format("YYYY-MM-DD")
 
   useEffect( () => {
-    if ( phoneInputState === 'uk-form-success' && passwordInputState === 'uk-form-success' && confPasswordInputState === 'uk-form-success' && checkboxState )
-      setIsButtonDisabled(false);
+    if ( phoneInputState === 'uk-form-success' && passwordInputState === 'uk-form-success' && confPasswordInputState === 'uk-form-success' && action === 'signup' )
+      setState({ isButtonDisabled: false, errorMessage: null });
+    else if ( phoneInputState === 'uk-form-success' && action === 'login' )
+      setState({ isButtonDisabled: false, errorMessage: null });
     else
-      setIsButtonDisabled(true);
-
+      setState({ isButtonDisabled: true, errorMessage: null });
     if ( spinnerState )
-      setIsButtonDisabled(true);
-  }, [phoneInputState, passwordInputState, confPasswordInputState, checkboxState, spinnerState])
+      setState({ isButtonDisabled: false, errorMessage: null });
+  }, [phoneInputState, passwordInputState, confPasswordInputState, spinnerState])
 
-  const validateEmail = (email) => {
-    const regEx = /\S+@\S+\.\S+/;
-    return regEx.test(email);
+  const validatePhoneNumber = (phoneNumber) => {
+    if ( phoneNumber.length !== 10 ) return false;
+    
+    const regEx = /^[0-9]*$/;
+    return regEx.test(phoneNumber);
   }
 
   const validatePassword = (password) => {
@@ -48,8 +55,8 @@ const AuthForm = ( { submit, action, phone_number = '', password = '', confirm_p
     handleChange(event);
 
     switch( name ) {
-      case 'email': {
-        if ( validateEmail(value) ) 
+      case 'phone_number': {
+        if ( validatePhoneNumber(value) ) 
           setPhoneInputState('uk-form-success');
         else 
           setPhoneInputState('uk-form-danger');
@@ -71,6 +78,20 @@ const AuthForm = ( { submit, action, phone_number = '', password = '', confirm_p
       }
     }
     
+  }
+
+  const validateDate = (event) => {
+    const { value } = event.target
+    if ( now.diff(value, 'years') < 18 ) {
+      setState( prevState => ({...prevState, isButtonDisabled: true, errorMessage: 'Debes tener al menos 18 años'}))
+    }
+    else if ( now.diff(value, 'years') > 99 ) {
+      setState( prevState => ({...prevState, isButtonDisabled: true, errorMessage: 'Introduce una fecha menor'}))
+    }
+    else {
+      setState( prevState => ({...prevState, errorMessage: null}))
+      form['date_of_birth'] = value
+    }
   }
 
   return (
@@ -100,18 +121,44 @@ const AuthForm = ( { submit, action, phone_number = '', password = '', confirm_p
         <form className="uk-form-stacked" onSubmit={submit}>
           
           <div className="uk-margin">
-            <label className="uk-form-label">Correo Electrónico:</label>
+            <label className="uk-form-label">Número Telefónico:</label>
             <div className="uk-inline uk-width-4-5 uk-width-1-3@s">
-              <span className="uk-form-icon" uk-icon="icon: user"></span>
-              <input onChange={event => inputValidation(event)} name="email" value={email} className={phoneInputState !== null ? `${emailInputState} uk-input uk-width-1-1 uk-border-pill` : "uk-input uk-width-1-1 uk-border-pill"} type="email" required={true} />
+              <span className="uk-form-icon" uk-icon="icon: receiver"></span>
+              <input onChange={event => inputValidation(event)} name="phone_number" value={phone_number} className={phoneInputState !== null ? `${phoneInputState} uk-input uk-width-1-1 uk-border-pill` : "uk-input uk-width-1-1 uk-border-pill"} type="number" required />
             </div>
-            { emailInputState === 'uk-form-danger' ?
+            { phoneInputState === 'uk-form-danger' ?
                 <div>
-                  <span className="uk-text-danger">Introduce una dirección de correo válida</span>
+                  <span className="uk-text-danger">Introduce un número telefónico válido</span>
                 </div>
               : null 
             }
           </div>
+          { action === 'signup' ?
+            <Fragment>
+              <div className="uk-margin">
+                <label className="uk-form-label">Nombre(s):</label>
+                <div className="uk-inline uk-width-4-5 uk-width-1-3@s">
+                  <span className="uk-form-icon" uk-icon="icon: user"></span>
+                  <input name="first_name" className="uk-input uk-width-1-1 uk-border-pill uk-text-center" type="text" onChange={handleChange} required />
+                </div>
+              </div>
+              <div className="uk-margin">
+                <label className="uk-form-label">Apellidos:</label>
+                <div className="uk-inline uk-width-4-5 uk-width-1-3@s">
+                  <span className="uk-form-icon" uk-icon="icon: user"></span>
+                  <input name="last_name" className="uk-input uk-width-1-1 uk-border-pill uk-text-center" type="text" onChange={handleChange} required />
+                </div>
+              </div>
+              <div className="uk-margin">
+                <label className="uk-form-label">Fecha de nacimiento:</label>
+                <div className="uk-inline uk-width-4-5 uk-width-1-3@s">
+                  <span className="uk-form-icon" uk-icon="icon: user"></span>
+                  <input name="date_of_birth" defaultValue={maxDate} className="uk-input uk-width-1-1 uk-border-pill uk-text-center" type="date" max={maxDate} onChange={validateDate} required />
+                </div>
+                <p className="uk-text-center uk-text-danger">{state.errorMessage}</p>
+              </div>
+            </Fragment> : null
+          }
           <div className="uk-margin">
             <label className="uk-form-label">Contraseña:</label>
             <div className="uk-inline uk-width-4-5 uk-width-1-3@s">
@@ -174,7 +221,7 @@ const AuthForm = ( { submit, action, phone_number = '', password = '', confirm_p
                     </div>
                   </div>
                  : 
-                  <NavLink to="/recuperar" className="links" onClick={event => setRoute('none')}>
+                  <NavLink to="/recuperar" className="links">
                     ¿Olvidaste tu contraseña?
                   </NavLink>
                 }
@@ -207,7 +254,7 @@ const AuthForm = ( { submit, action, phone_number = '', password = '', confirm_p
 
           
 
-          <button disabled={action === 'signup' ? isButtonDisabled : false} className="uk-button uk-button-primary uk-border-pill uk-width-3-5 uk-width-1-5@s uk-margin" type="submit">
+          <button disabled={state.isButtonDisabled} className="uk-button uk-button-primary uk-border-pill uk-width-3-5 uk-width-1-5@s uk-margin" type="submit">
             {action === "signup" ? spinnerState ? "Registrando" : "Registrar" : "Entrar"} <div className={ spinnerState ? 'uk-visible' : 'uk-hidden'} uk-spinner="true"></div>
           </button>
 

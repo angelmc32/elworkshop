@@ -5,14 +5,16 @@ import { signup } from '../../services/auth-services';    // Import signup servi
 import AuthForm from './AuthForm';                        // Import AuthForm react component
 import useForm from '../../hooks/useForm';                // Import useForm custom hook
 import UIkit from 'uikit';                                // Import UIkit for notifications
+import moment from 'moment';                                    // Import momentjs for date formatting
 
 // Declare Signup functional component
 const Signup = () => {
 
   const { form, handleInput } = useForm();      // Destructure form state variable and handleInput function
-  const { user } = useContext(AppContext);   // Destructure setUser function for user state manipulation
+  const { user, setUser } = useContext(AppContext);   // Destructure setUser function for user state manipulation
   const { push } = useHistory();                // Destructure push method from useHistory to "redirect" user
   const [ spinnerState, setSpinnerState ] = useState(false)
+  const maxDate = moment().subtract(18, 'years').format("YYYY-MM-DD")
 
   useEffect( () => {
     
@@ -28,15 +30,19 @@ const Signup = () => {
 
     event.preventDefault();                     // Prevent page reloading after submit action
     setSpinnerState(true)
+    if ( !form['date_of_birth'] ) form['date_of_birth'] = maxDate
     
     // Call signup service with form state variable as parameter, which includes form data for e-mail and password
     signup(form)
     .then( res => {
 
-      const { msg } = res.data;
+      const { user, token, msg } = res.data;
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('token', token);
 
       setSpinnerState(false)
-      push('/registrar');    // "Redirect" user to registration information page
+      setUser(user)
+      push('/home');    // "Redirect" user to registration information page
 
       // Send UIkit success notification
       UIkit.notification({
@@ -47,6 +53,8 @@ const Signup = () => {
 
     })
     .catch( res => {
+
+      console.log(res.response)
 
       const { msg } = res.response.data;
       setSpinnerState(false);
@@ -77,6 +85,7 @@ const Signup = () => {
           validateEmail={validateEmail}
           {...form}
           spinnerState={spinnerState}
+          form={form}
         />
       </div>
     </div>

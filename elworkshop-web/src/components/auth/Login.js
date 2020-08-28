@@ -10,7 +10,7 @@ import UIkit from 'uikit';                              // Import UIkit for noti
 const Login = () => {
 
   const { form, handleInput } = useForm();                // Destructure form state variable and handleInput function
-  const { user, setUser, setRoute } = useContext(AppContext);   // Destructure setUser function for user state manipulation
+  const { user, setUser } = useContext(AppContext);   // Destructure setUser function for user state manipulation
   const { push } = useHistory();                          // Destructure push method from useHistory to "redirect" user
 
   useEffect( () => {
@@ -36,13 +36,7 @@ const Login = () => {
       localStorage.setItem('token', token);
 
       setUser(user);    // Modify user state variable, setting the user data in the state
-      setRoute('');
-      if ( !user.gaveConsent )
-        push('/consentimiento');    // "Redirect" user to home
-      else if ( !user.isProfileComplete )
-        push('/perfil')
-      else
-        push('/home')
+      push('/home')
 
     })
     .catch( res => {

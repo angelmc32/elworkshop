@@ -20,14 +20,9 @@ const useForm = () => {
     //   setForm( prevState => ({...prevState, [name]: checked}) );
 
     // } else 
-    if ( name === 'date' ) {
-      let date = moment(value).format()
-      setForm( prevState => ({...prevState, [name]: date}) );
-
-    } else {
       // Update the form state without erasing previos values (with prevState)
       setForm( prevState => ({...prevState, [name]: value}) );
-    }
+    
   };
 
   // Declare handleInputFile function for files manipulation

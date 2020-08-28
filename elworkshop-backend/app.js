@@ -8,6 +8,9 @@ const mongoose     = require('mongoose');
 const logger       = require('morgan');
 const path         = require('path');
 
+// cors package to allow cross-origin resource sharing (CORS) between front-end and back-end
+const cors         = require('cors');
+
 const cloudDB      = process.env.DB;
 mongoose
   .connect(cloudDB, {useNewUrlParser: true, useUnifiedTopology: true})
@@ -28,6 +31,13 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+// cors package config to allow requests from the url's in the origin array
+app.use(
+  cors({
+    origin: ['http://localhost:3001']
+  })
+);
 
 // Express View engine setup
 

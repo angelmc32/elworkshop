@@ -19,29 +19,20 @@ const Navbar = () => {
     logout();                   // Execute logout function (clear localStorage)
     push('/login');             // Redirect user to login
     resetUserContext();         // delete user data from context to an empty object
-    closeMenu();
 
   };
-
-  const closeMenu = () => {
-    const toggle = document.getElementById('toggle');
-    toggle.checked = !toggle.checked;
-  }
 
   return (
 
     <nav className="uk-navbar uk-navbar-container uk-navbar-transparent uk-flex uk-flex-between uk-flex-middle uk-flex-wrap">
       
       <ul className="uk-navbar-nav uk-height-1-1">
-          <li className="uk-active uk-flex uk-flex-middle uk-height-1-1">
-              <NavLink to="/">
-                El Workshop
-              </NavLink>
+          <li className="uk-active uk-flex uk-flex-middle uk-height-1-1 uk-margin-left">
+            <NavLink to={ user._id ? "/home" : "/"}>
+              El Workshop
+            </NavLink>
           </li>
       </ul>
-
-      <label id="nav-menu" htmlFor="toggle" className="uk-margin-right uk-height-1-1"><span uk-icon="menu"></span></label>
-      <input type="checkbox" id="toggle"/>
       
       
           
@@ -62,24 +53,17 @@ const Navbar = () => {
                   </button>
                 </NavLink>
               </li>
-              <div className="mobile-only uk-overflow-auto">
-                <li className="uk-active">
-                  <NavLink to="/home">Mis chambitas</NavLink>
-                </li>
-              </div>
             </ul>
             :
             <ul className="menu uk-navbar-nav">
-              <li className="uk-active uk-flex uk-flex-center uk-flex-middle" onClick={closeMenu} ><Link to="/servicios">Servicios</Link></li>
-              <li className="uk-active uk-flex uk-flex-center uk-flex-middle" onClick={closeMenu} ><Link to="/nosotros">Nosotros</Link></li>
-              <li className="uk-active uk-flex uk-flex-center uk-flex-middle" onClick={closeMenu} >
+              <li className="uk-active uk-flex uk-flex-center uk-flex-middle">
                 <Link to="/login" className="uk-margin-remove uk-padding-remove">
                   <button className="uk-button uk-button-white uk-border-pill">
                     Inicia Sesión
                   </button>
                 </Link>
               </li>
-              <li className="uk-active uk-flex uk-flex-center uk-flex-middle" onClick={closeMenu} >
+              <li className="uk-active uk-flex uk-flex-center uk-flex-middle">
                 <Link to="/registro">
                   <button className="uk-button uk-button-primary uk-border-pill">
                     Regístrate
