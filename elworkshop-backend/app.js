@@ -35,7 +35,7 @@ app.use(cookieParser());
 // cors package config to allow requests from the url's in the origin array
 app.use(
   cors({
-    origin: ['http://localhost:3001']
+    origin: ['https://elworkshop.herokuapp.com', 'http://localhost:3001', 'http://elworkshop.herokuapp.com']
   })
 );
 
