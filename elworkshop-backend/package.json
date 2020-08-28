@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node ./bin/www",
     "dev": "DEBUG=elworkshop-backend:* nodemon ./bin/www",
-    "dev-windows": "nodemon ./bin/www"
+    "dev-windows": "nodemon ./bin/www",
+    "deploy": "cd .. && git subtree push --prefix elworkshop-backend heroku master"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
